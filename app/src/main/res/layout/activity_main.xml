@@ -9,11 +9,6 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.thesamespace.bleconnecttest.MainActivity">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,7 +34,7 @@
                     android:id="@+id/btn_clear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Clear" />
+                    android:text="Refresh" />
 
 
             </LinearLayout>
@@ -61,13 +56,16 @@
                     android:text="DisConnect" />
             </LinearLayout>
 
+            <ListView
+                android:id="@+id/lv_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ListView>
+
             <TextView
                 android:id="@+id/tv_bleList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BLE Info..." />
         </LinearLayout>
-    </ScrollView>
-
-
 </LinearLayout>

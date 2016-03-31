@@ -1,8 +1,15 @@
 package com.example.thesamespace.bleconnecttest;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanRecord;
+import android.bluetooth.le.ScanResult;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,29 +17,50 @@ import java.util.List;
 /**
  * Created by thesamespace on 2016/3/25.
  */
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public abstract class MyLeScaner {
     private BluetoothAdapter mBluetoothAdapter;
 
     public List<BLE> bleList = new ArrayList<>();
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public MyLeScaner() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        turnONBluetooth(mBluetoothAdapter);
+    }
+
+    public boolean isTablet(Context context) {
+        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    private void turnONBluetooth(final BluetoothAdapter mBluetoothAdapter) {
         if (mBluetoothAdapter == null) {
             ShowMsg("No Bluetooth");
         }
         if (mBluetoothAdapter.isEnabled() == false) {
             mBluetoothAdapter.enable();
-            ShowMsg("正在开启蓝牙");
+            ShowMsg("正在开启蓝牙...");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    do {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    } while (mBluetoothAdapter.getState() != BluetoothAdapter.STATE_ON);
+                }
+            }).start();
         }
+        ShowMsg("已开启蓝牙");
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            if (device.getName().equals("MAGIC01")) {
-                mOnLeScan(device, rssi, scanRecord);
-                addBLEToList(device, rssi);
-            }
+            mOnLeScan(device, rssi, scanRecord);
+            addBLEToList(device, rssi);
         }
     };
 
@@ -201,7 +229,6 @@ public abstract class MyLeScaner {
             return rssiStr;
         }
     }
-
 }
 
 
