@@ -40,7 +40,7 @@ public class ServerAdapter extends BaseAdapter {
         TextView tv_serverName = (TextView) view.findViewById(R.id.tv_serverName);
         TextView tv_serverUUID = (TextView) view.findViewById(R.id.tv_serverUUID);
         tv_serverName.setText(mData.get(position).getServerName());
-        tv_serverUUID.setText("Server UUID:"+mData.get(position).getServerUUID());
+        tv_serverUUID.setText("UUID:"+mData.get(position).getServerUUID());
         return view;
     }
 }
