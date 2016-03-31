@@ -1,11 +1,13 @@
 package com.example.thesamespace.bleconnecttest;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +19,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class MainActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
     private final static String UUID_KEY_DATA = "0000fff1-0000-1000-8000-00805f9b34fb";
     private Button btn_scan;
     private Button btn_stopScan;
@@ -25,14 +27,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btn_connect;
     private Button btn_disConnect;
     private TextView tv_bleList;
-    private ListView lv_test;
+    private ListView lv_bleList;
     private BluetoothGatt mBluetoothGatt;
     private MyLeScaner myLeScaner = new MyLeScaner() {
         @Override
         protected void mOnLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            ShowMsg(device.getName() + " " + rssi);
-            MyAdapter myAdapter = new MyAdapter(MainActivity.this, getData());
-            lv_test.setAdapter(myAdapter);
+            BLEAdapter bledapter = new BLEAdapter(MainActivity.this, getData());
+            lv_bleList.setAdapter(bledapter);
         }
 
         @Override
@@ -69,16 +70,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_disConnect = (Button) findViewById(R.id.btn_disConnect);
         btn_disConnect.setOnClickListener(this);
         tv_bleList = (TextView) findViewById(R.id.tv_bleList);
-        lv_test = (ListView) findViewById(R.id.lv_list);
-        lv_test.setOnItemClickListener(this);
+        lv_bleList = (ListView) findViewById(R.id.lv_list);
+        lv_bleList.setOnItemClickListener(this);
     }
+
 
     private List<ListItem> getData() {
         List<ListItem> list = new ArrayList<>();
         for (int i = 0; i < myLeScaner.bleList.size(); i++) {
-            String name = myLeScaner.bleList.get(i).mDevice.getName();
+            String blename = myLeScaner.bleList.get(i).mDevice.getName();
             int rssi = myLeScaner.bleList.get(i).getLastRssi();
-            list.add(new ListItem(name, rssi));
+            list.add(new ListItem(blename, rssi));
         }
         return list;
     }
@@ -223,6 +225,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        Intent intent=new Intent(MainActivity.this, BLEServerListActivity.class);
+        intent.putExtra("mDevice", myLeScaner.bleList.get(position).mDevice);
+        startActivity(intent);
     }
 }
