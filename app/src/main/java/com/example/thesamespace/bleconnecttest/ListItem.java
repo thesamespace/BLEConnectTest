@@ -30,7 +30,7 @@ public class ListItem {
         return rssi;
     }
 
-    private void setRssi(int rssi) {
+    public void setRssi(int rssi) {
         this.rssi = rssi;
     }
 

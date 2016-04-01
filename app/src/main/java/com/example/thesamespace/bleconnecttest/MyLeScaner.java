@@ -59,8 +59,8 @@ public abstract class MyLeScaner {
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            mOnLeScan(device, rssi, scanRecord);
             addBLEToList(device, rssi);
+            mOnLeScan(device, rssi, scanRecord);
         }
     };
 
@@ -73,7 +73,6 @@ public abstract class MyLeScaner {
                 break;
             }
         }
-
         if (!isExisted) {
             BLE mBle = new BLE(device, rssi);
             bleList.add(mBle);
