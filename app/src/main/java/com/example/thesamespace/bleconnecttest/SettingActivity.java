@@ -9,20 +9,20 @@ import android.widget.ListView;
 /**
  * Created by thesamespace on 2016/3/31.
  */
-public class BLESettingActivity extends Activity implements AdapterView.OnItemClickListener {
+public class SettingActivity extends Activity implements AdapterView.OnItemClickListener {
     private final static String UUID_KEY_DATA = "0000fff1-0000-1000-8000-00805f9b34fb";
     private ListView lv_bleCharacteristicList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blesetting);
+        setContentView(R.layout.activity_setting);
         init();
     }
 
     private void init() {
         lv_bleCharacteristicList = (ListView) findViewById(R.id.lv_blecharacteristicList);
-        lv_bleCharacteristicList.setOnItemClickListener(BLESettingActivity.this);
+        lv_bleCharacteristicList.setOnItemClickListener(SettingActivity.this);
     }
 
     @Override

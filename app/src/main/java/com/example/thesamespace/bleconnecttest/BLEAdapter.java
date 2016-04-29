@@ -37,7 +37,7 @@ public class BLEAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = View.inflate(mContext, R.layout.blelist_item, null);
+        View view = View.inflate(mContext, R.layout.item_blelist, null);
         TextView tv_name = (TextView) view.findViewById(R.id.tv_name);
         TextView tv_rssi = (TextView) view.findViewById(R.id.tv_rssi);
         tv_name.setText(mData.get(position).getName());

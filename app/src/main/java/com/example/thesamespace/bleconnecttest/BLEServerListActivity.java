@@ -26,19 +26,16 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
     private BluetoothGatt mBluetoothGatt;
     private BluetoothGattCharacteristic gattCharacteristic;
     private TextView tv_bleName;
-    private TextView tv_bleInfo;
-    private TextView tv_bleRssi;
     private TextView tv_log;
     private EditText edt_command;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bleserverlist);
+        setContentView(R.layout.fragment_settingcontent);
         init();
         Bundle bundle = getIntent().getExtras();
         mDevice = (BluetoothDevice) bundle.get("mDevice");
-        connectGATT();
     }
 
     @Override
@@ -49,8 +46,6 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
 
     private void init() {
         tv_bleName = (TextView) findViewById(R.id.tv_bleName);
-        tv_bleInfo = (TextView) findViewById(R.id.tv_bleInfo);
-        tv_bleRssi = (TextView) findViewById(R.id.tv_bleRssi);
         tv_log = (TextView) findViewById(R.id.tv_log);
         edt_command = (EditText) findViewById(R.id.edt_command);
 
@@ -68,49 +63,57 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_write:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < 10; i++) {
-                            try {
-                                Thread.sleep(1000);
-                                if (gattCharacteristic != null) {
-                                    PrintLog("获取gattCharacteristic成功");
-                                    byte[] bytes = {Byte.parseByte(edt_command.getText().toString())};
-                                    gattCharacteristic.setValue(bytes);
-                                    mBluetoothGatt.writeCharacteristic(gattCharacteristic);
-                                    break;
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).start();
+                connectGATT();
+                setBLE(edt_command.getText().toString());
                 break;
             case R.id.btn_read:
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < 10; i++) {
-                            try {
-                                Thread.sleep(1000);
-                                if (gattCharacteristic != null) {
-                                    PrintLog("获取gattCharacteristic成功");
-                                    mBluetoothGatt.readCharacteristic(gattCharacteristic);
-                                    break;
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }).start();
+                connectGATT();
+                readBLE();
                 break;
             case R.id.btn_clearLog:
                 tv_log.setText("Log:");
                 break;
         }
+    }
+
+    private void setBLE(final String value) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 10; i++) {
+                    try {
+                        Thread.sleep(1000);
+                        if (gattCharacteristic != null) {
+                            byte[] bytes = {Byte.parseByte(value)};
+                            gattCharacteristic.setValue(bytes);
+                            mBluetoothGatt.writeCharacteristic(gattCharacteristic);
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private void readBLE() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < 10; i++) {
+                    try {
+                        Thread.sleep(1000);
+                        if (gattCharacteristic != null) {
+                            mBluetoothGatt.readCharacteristic(gattCharacteristic);
+                            break;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     @Override
@@ -184,7 +187,7 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
             for (byte b : bytes) {
                 str += b;
             }
-            PrintLog("onCharacteristicRead: " + str + " status:" + status);
+            PrintLog("onCharacteristicRead: " + Integer.toBinaryString(bytes[0]) + " status:" + status);
         }
 
         @Override
@@ -201,7 +204,6 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             super.onReadRemoteRssi(gatt, rssi, status);
-            setBLERssi(rssi);
         }
     };
 
@@ -221,8 +223,6 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
             @Override
             public void run() {
                 tv_bleName.setText(mDevice.getName());
-                tv_bleInfo.setText("Address:" + mDevice.getAddress());
-                tv_bleInfo.append("\nUUID:" + mDevice.getUuids());
             }
         });
         new Thread(new Runnable() {
@@ -240,25 +240,6 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
         }).start();
     }
 
-    private void setBLERssi(final int rssi) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tv_bleRssi.setText("Rssi:" + rssi);
-                        }
-                    });
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
     private void PrintLog(final String logStr) {
         runOnUiThread(new Runnable() {
             @Override
@@ -267,6 +248,4 @@ public class BLEServerListActivity extends Activity implements View.OnClickListe
             }
         });
     }
-
-
 }
